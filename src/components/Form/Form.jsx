@@ -1,39 +1,37 @@
-import { useState } from 'react';
-import { nanoid } from 'nanoid';
-import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
 import initialState from './InitialState';
 import styles from './form.module.css';
+import { addContact } from 'redux/contacts/contactsSlice';
 
-export const Form = ({ onSubmit }) => {
-  const [state, setState] = useState({ ...initialState });
+export const Form = () => {
+  const contacts = useSelector(store => store.contacts);
+  const dispatch = useDispatch();
 
   const handleChange = event => {
-    setState(prevState => {
-      return {
-        ...prevState,
-        [event.target.name]: event.target.value,
-      };
-    });
+    initialState[event.target.name] = event.target.value;
+    return;
+  };
+
+  const onAddContact = data => {
+    if (contacts.find(contact => contact.name === data.name)) {
+      alert(`${data.name} is already in contacts`);
+      return;
+    }
+    const action = addContact(data.name, data.number);
+    dispatch(action);
   };
 
   const handleSubmit = event => {
     event.preventDefault();
-    onSubmit(state);
-    setState({ ...initialState });
-    console.log(state);
+    onAddContact(initialState);
   };
-
-  const nameId = nanoid();
-  const numberId = nanoid();
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
-      <label htmlFor={nameId}>Name</label>
+      <label>Name</label>
       <input
-        id={nameId}
         type="text"
         name="name"
-        value={state.name}
         placeholder="Enter the name"
         pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
         title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
@@ -41,12 +39,10 @@ export const Form = ({ onSubmit }) => {
         onChange={handleChange}
       />
 
-      <label htmlFor={numberId}>Number</label>
+      <label>Number</label>
       <input
-        id={numberId}
         type="tel"
         name="number"
-        value={state.number}
         placeholder="Enter the number"
         pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
         title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
@@ -59,10 +55,6 @@ export const Form = ({ onSubmit }) => {
       </button>
     </form>
   );
-};
-
-Form.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
 };
 
 // export class Form extends Component {
