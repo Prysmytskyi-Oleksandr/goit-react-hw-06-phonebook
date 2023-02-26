@@ -24,6 +24,7 @@ export const Form = () => {
   const handleSubmit = event => {
     event.preventDefault();
     onAddContact(initialState);
+    event.target.reset();
   };
 
   return (
