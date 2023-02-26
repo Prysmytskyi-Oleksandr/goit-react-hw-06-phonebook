@@ -17,7 +17,7 @@ export const Form = () => {
       alert(`${data.name} is already in contacts`);
       return;
     }
-    const action = addContact(data.name, data.number);
+    const action = addContact(data);
     dispatch(action);
   };
 
